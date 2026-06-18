@@ -2236,9 +2236,10 @@
         <p class="form-success-p">Thank you. We'll be in touch within two business days from vertoxweb296@gmail.com.</p>
       </div>
       <form id="contactForm" onsubmit="handleSubmit(event)">
-        <input type="hidden" name="_subject" value="New enquiry from Vertex Web site" />
-        <input type="hidden" name="_captcha" value="false" />
-        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
+        <input type="hidden" name="access_key" value="a4f393fc-09e8-46fe-98e1-e3dee96d16d9" />
+        <input type="hidden" name="subject" value="New enquiry from Vertex Web site" />
+        <input type="hidden" name="from_name" value="Vertex Web — Site Enquiry" />
+        <input type="text" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" />
         <div class="field">
           <label for="name">Name</label>
           <input id="name" name="name" type="text" placeholder="Your full name" required />
@@ -2421,22 +2422,26 @@
     }, { passive: false });
   })();
 
-  // Contact form — submits via FormSubmit so enquiries land directly in the inbox below
+  // Contact form — submits via Web3Forms so enquiries land directly in the inbox below
   function handleSubmit(e) {
     e.preventDefault();
     var form = document.getElementById('contactForm');
     var submitBtn = form.querySelector('.btn-submit');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '0.6'; }
 
-    fetch('https://formsubmit.co/ajax/vertoxweb296@gmail.com', {
+    fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Accept': 'application/json' },
       body: new FormData(form)
     })
       .then(function (res) { return res.json(); })
-      .then(function () {
-        form.style.display = 'none';
-        document.getElementById('formSuccess').classList.add('visible');
+      .then(function (data) {
+        if (data.success) {
+          form.style.display = 'none';
+          document.getElementById('formSuccess').classList.add('visible');
+        } else {
+          throw new Error(data.message || 'Submission failed');
+        }
       })
       .catch(function () {
         if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; }
